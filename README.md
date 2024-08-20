@@ -7,3 +7,6 @@ This tool is designed to help you manage and securely store your passwords local
 - **Automatic Clipboard**: The generated password is automatically copied to your clipboard, ready to be pasted wherever needed, saving you time and reducing the risk of manual errors.
 - **Secure Password Generation**: Generate strong, random passwords with a single click, enhancing the security of your online accounts.
 - **Cross-Platform**: The application runs on Windows, macOS, and Linux.
+
+## Note
+Make sure to install pyperclip for clipboard functionality
