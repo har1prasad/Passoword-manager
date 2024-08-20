@@ -1,4 +1,4 @@
-# Passoword-manager
+# Password-manager
 This tool is designed to help you manage and securely store your passwords locally on your machine. Built using Python and Tkinter, it provides a straightforward, user-friendly interface for generating, storing, and accessing passwords, with an emphasis on security and convenience.
 
 ## 🔑 Features
