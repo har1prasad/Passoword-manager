@@ -1,10 +1,37 @@
 from tkinter import *
 from tkinter import messagebox
+import json
 import pyperclip
 import os
 import random
 
 FONT = ("Helvetica", 11, "bold")
+
+# ---------------------------- SEARCH ------------------------------- #
+def search():
+
+    website = entry_website.get()
+
+    if not website:
+        messagebox.showerror(title="OOPS", message="Please fill website field.")
+    else:
+        try:
+            file_path = ".\\passwords.json"
+            with open(file_path, "r") as data:
+                existing_data = json.load(data)
+        except FileNotFoundError:
+            messagebox.showinfo(title="No File Found", message=f"please make sure to save some passwords before searching")
+        else:
+            if website not in existing_data:
+                messagebox.showerror(title="OOPS", message=f"""No corresponding data related to {website}.
+                                    \n Please ensure the spelling is accurate.""")
+            else:
+                messagebox.showinfo(title=website, message=f"""\nUsername :{existing_data[website]["name"]} 
+                                \nPassword :{existing_data[website]["password"]}""")
+        finally:
+            entry_website.delete(0, END)
+
+
 
 # ---------------------------- GENERATING PASSWORD ------------------------------- #
 def generate_password():
@@ -32,29 +59,33 @@ def generate_password():
 
 # ---------------------------- SAVING DATA ------------------------------- #
 def save_data():
+
     website = entry_website.get()
     name = entry_name.get()
     password = enrty_pass.get()
 
+    new_dict = {
+        website:{
+            "name":name,
+            "password":password
+            }}
+
     if not website or not name or not password:
         messagebox.showerror(title="OOPS", message="Please fill out all required fields.")
     else:
-        is_ok = messagebox.askokcancel(title=website, message=f"""These are the details you've provided 
-                            \nUsername : {name} \nPassword : {password} \nis it ok to save ?""")
+        file_path = ".\\passwords.json"
         
-        if is_ok:
-            file_path = ".\\passwords.csv"
-            
-            is_empty = os.stat(file_path).st_size == 0 if os.path.isfile(file_path) else True
-            # this line of code determines if the file is either empty or does not exist. 
-            # If the file does not exist, it is treated as empty. 
-            # If the file exists, it checks if it is empty based on its size.
-
-            with open(file_path, "a") as data:
-                if is_empty:
-                    data.write("Website, Username, Password\n")
-                data.write(f"{website}, {name}, {password}\n")
-
+        try:
+            with open(file_path, "r") as data:
+                existing_data = json.load(data)
+                existing_data.update(new_dict)
+        except FileNotFoundError:
+            with open(file_path, "w") as data:
+                json.dump(new_dict, data, indent=4)
+        else:
+            with open(file_path, "w") as data:
+                json.dump(existing_data, data, indent=4)
+        finally:
             entry_website.delete(0, END)
             entry_name.delete(0, END)
             enrty_pass.delete(0, END)
@@ -72,8 +103,8 @@ canvas.grid(row=0, column=1, pady=(0, 12))
 
 label_website = Label(window, text="Website : ", font=FONT)
 label_website.grid(row=1, sticky="w", column=0, pady=(0, 5))
-entry_website = Entry(window, width=62, borderwidth=1, highlightthickness=1)
-entry_website.grid(row=1, column=1, columnspan=2)
+entry_website = Entry(window, width=43, borderwidth=1, highlightthickness=1)
+entry_website.grid(row=1, column=1)
 entry_website.focus()
 
 label_name = Label(window, text="Username : ", font=FONT)
@@ -85,6 +116,9 @@ label_password = Label(window, text="Password : ", font=FONT)
 label_password.grid(row=3,sticky="w", column=0, pady=(0, 5))
 enrty_pass = Entry(window, width=43, borderwidth=1, highlightthickness=1)
 enrty_pass.grid(row=3, column=1)
+
+button_search = Button(window, width=14, text="Search", command=search)
+button_search.grid(row =1, column=2, pady=(0, 5))
 
 button_pass = Button(window, text="Generate password", command=generate_password)
 button_pass.grid(row=3, column=2, pady=(0, 5))
